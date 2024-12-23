@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { createUser } from '../utils/API';
+import { useMutation } from '@apollo/client';
+import { ADD_USER } from '../utils/mutations.js';
+
+// import { createUser } from '../utils/API';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
@@ -11,6 +14,9 @@ const SignupForm = () => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
+
+  //set up useMutation with ADD_USER
+  const [createUser, { error, data }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -28,18 +34,29 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await createUser(userFormData);
+      // const response = await createUser(userFormData);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      // if (!response.ok) {
+      //   throw new Error('something went wrong!');
+      // }
 
-      const { token, user } = await response.json();
-      console.log(user);
+      console.log(userFormData)
+
+      const { data } = await createUser({
+        variables: { 
+          username: userFormData.username, 
+          email: userFormData.email, 
+          password: userFormData.password },
+      });
+
+      // const { token, user } = await response.json();
+      const token = data.addUser.token;
+      console.log(token);
       Auth.login(token);
     } catch (err) {
-      console.error(err);
       setShowAlert(true);
+      console.error(err);
+      console.error('GraphQL error: ', error);
     }
 
     setUserFormData({
@@ -96,6 +113,8 @@ const SignupForm = () => {
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
+        {error && <p className="text-danger">Error: {error.message}</p>}
+        {data? <p>Success! You may now head <a href="/">back to the homepage.</a></p> : null}
         <Button
           disabled={!(userFormData.username && userFormData.email && userFormData.password)}
           type='submit'

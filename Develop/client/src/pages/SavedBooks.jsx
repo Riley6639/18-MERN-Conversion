@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { useState, useEffect } from 'react';
 import {
   Container,
@@ -17,7 +18,7 @@ import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
-  const [data] = useQuery(GET_ME);
+  const { data } = useQuery(GET_ME);
   const [deleteBook] = useMutation(REMOVE_BOOK);
 
   // use this to determine if `useEffect()` hook needs to run again
@@ -54,7 +55,7 @@ const SavedBooks = () => {
 
   //use the useQuery() hook that sets the state for userData
   useEffect(() => {
-    if (data) {
+    if (data && data.me) {
       setUserData(data.me);
     }
   }, [data]);
@@ -77,7 +78,7 @@ const SavedBooks = () => {
       // const updatedUser = await response.json();
       // setUserData(updatedUser);
 
-      //use the usemutation hook to execute the removeBook mutation
+      //use the useMutation hook to execute the removeBook mutation
       const { data } = await deleteBook({
         variables: { bookId }
       });
@@ -114,8 +115,8 @@ const SavedBooks = () => {
         <Row>
           {userData.savedBooks.map((book) => {
             return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
+              <Col md="4" key={book.bookId}>
+                <Card border='dark'>
                   {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
