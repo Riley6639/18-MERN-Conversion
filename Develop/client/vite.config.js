@@ -12,10 +12,7 @@ export default defineConfig({
         target: 'http://localhost:3001',
         secure: false,
         changeOrigin: true,
-        // bypass(req) {
-        //   req.url = req.url.replace(/^\/graphql/, '/graphql');
-        //   return '/graphql';
-        // }
+        rewrite: (path) => path.replace(/^\/graphql/, '/graphql'),
       }
     }
   }
