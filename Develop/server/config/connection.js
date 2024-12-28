@@ -15,7 +15,6 @@ const options = {
 // Only apply TLS options for Atlas connection
 if (uri.startsWith('mongodb+srv://')) {
     options.tls = true;
-    options.tlsInsecure = false;
     options.tlsAllowInvalidCertificates = false;
 }
 
